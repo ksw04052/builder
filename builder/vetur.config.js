@@ -2,7 +2,7 @@
 /** @type {import('vls').VeturConfig} */
 module.exports = {
     // **optional** default: `{}`
-    // override vscode settings part
+    // override vscode settings
     // Notice: It only affects the settings used by Vetur.
     settings: {
       "vetur.useWorkspaceDependencies": true,
@@ -11,7 +11,7 @@ module.exports = {
     // **optional** default: `[{ root: './' }]`
     // support monorepos
     projects: [
-      './packages/repo2', // shorthand for only root.
+      './packages/repo2', // Shorthand for specifying only the project root location
       {
         // **required**
         // Where is your project?
