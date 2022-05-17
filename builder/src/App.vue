@@ -1,63 +1,108 @@
 <template>
   <div>
     <h2>무릉 빌드 도우미</h2>
-    <div id="inputArea">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-        정보 입력
-      </button>
-      <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="staticBackdropLabel">정보 입력</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div>
+      <h4>준비물:</h4>
+      도핑:
+      <br>
+      상시유지 버프:
+      <br>
+      시드링:
+      <br>
+      특수코어:
+    </div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+      정보 입력
+    </button>
+    <div class="modal" id="staticBackdrop" style="z-index: 1400;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">정보 입력</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div>
+              직업:
+              <select v-model="selectedJob" @change="jobIDCal">
+                <option :key="i" :value="job.name" v-for="(job,i) in jobs">{{job.name}}</option>
+              </select>
             </div>
-            <div class="modal-body">
-              <div>
-                직업:
-                <select>
-                  <option :key="i" :value="job.name" v-for="(job,i) in jobs">{{job.name}}</option>
-                </select>
-              </div>
-              <div>
-                쿨타임 감소 % (메르 유니온) [2~6%]:
-                <input type="number" class="numberInput" min="0" max="6" v-model="cdrP">
-              </div>
-              <div>
-                쿨타임 감소 초 (쿨감뚝):
-                <input type="number" class="numberInput" min="0" v-model="cdrV">
-              </div>
-              <div>
-                버프 지속시간 증가 %:
-                <input type="number" class="numberInput" min="0" v-model="bdiP">
-              </div>
+            <div>
+              쿨타임 감소 % (메르 유니온) [2~6%]:
+              <input type="number" class="numberInput" min="0" max="6" v-model="cdrP">
+            </div>
+            <div>
+              쿨타임 감소 초 (쿨감뚝):
+              <input type="number" class="numberInput" min="0" v-model="cdrV">
+            </div>
+            <div>
+              버프 지속시간 증가 %:
+              <input type="number" class="numberInput" min="0" v-model="bdiP">
+            </div>
 
-              <div v-for="(skill, i) in skills" :key="i" class="inputSkill">
-                <button @click="removeSkill(i)" class="remove">-</button>
-                <span>스킬{{i + 1}}</span>
-                <img src="./assets/logo.png" class="skillIcon" alt="">
-                <input type="text" class="textInput" v-model="skills[i].name">
-                <input type="number" class="numberInput" v-model="skills[i].cooldown">
-                <input type="number" class="numberInput" v-model="skills[i].duration">
-                <br>
-                <input type="checkbox" id="cdrPCheck" value="checked" v-model="cdrPCheck[i]">
-                <label for="cdrPCheck">쿨%</label>
-                <input type="checkbox" id="cdrVCheck" value="checked" v-model="cdrVCheck[i]">
-                <label for="cdrVCheck">쿨뚝</label>
-                <input type="checkbox" id="bdiPCheck" value="checked" v-model="bdiPCheck[i]">
-                <label for="bdiPCheck">벞지</label>
-                | 쿨타임: {{cooldownCal(skills[i].cooldown, i)}} | 지속시간: |
-              </div>
-              <button @click="addSkill()">추가</button>
+            <div v-for="(skill, i) in skills" :key="i" class="inputSkill">
+              <button @click="removeSkill(i)" class="remove">-</button>
+              <span>스킬{{i + 1}}</span>
+              <img class="skillIcon" :src="skillIcons[i]" data-bs-toggle="modal" data-bs-target="#staticBackdrop2" @click="selectSkill(i)" alt="">
+              <input type="text" class="textInput" v-model="skills[i].name">
+              <input type="number" class="numberInput" v-model="skills[i].cooldown">
+              <input type="number" class="numberInput" v-model="skills[i].duration">
+              <br>
+              <input type="checkbox" id="cdrPCheck" value="checked" v-model="cdrPCheck[i]">
+              <label for="cdrPCheck">쿨%</label>
+              <input type="checkbox" id="cdrVCheck" value="checked" v-model="cdrVCheck[i]">
+              <label for="cdrVCheck">쿨뚝</label>
+              <input type="checkbox" id="bdiPCheck" value="checked" v-model="bdiPCheck[i]">
+              <label for="bdiPCheck">벞지</label>
+              | 쿨타임: {{cooldownCal(skills[i].cooldown, i)}} | 지속시간: |
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-            </div>
+            <button @click="addSkill()">추가</button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
-      </div>      
+      </div>
     </div>
-
+    <div class="modal" id="staticBackdrop2" data-bs-backdrop="static" style="z-index: 1600;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">스킬{{selectedSkill + 1}}</h5>
+            <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#staticBackdrop"></button>
+          </div>
+          <div class="modal-body">
+            <span>1{{jobs[selectedJobID].second}}</span>
+            <br>
+            <span>1차</span>
+            <br>
+            <span v-for="n in jobs[selectedJobID].first" :key="n">
+              <img :src="`src/assets/skills/${selectedJob}/1차/${n}.icon.png`" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click="skillIconSrc(selectedSkill, 1, n)" alt="">
+            </span>
+            <br>
+            <span>2차</span>
+            <br>
+            <span v-for="n in jobs[selectedJobID].second" :key="n">
+              <img :src="`src/assets/skills/${selectedJob}/2차/${n}.icon.png`" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click="skillIconSrc(selectedSkill, 2, n)" alt="">
+            </span>
+            <br>
+            <span>3차</span>
+            <br>
+            <span v-for="n in jobs[selectedJobID].third" :key="n">
+              <img :src="`src/assets/skills/${selectedJob}/3차/${n}.icon.png`" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click="skillIconSrc(selectedSkill, 3, n)" alt="">
+            </span>
+            <br>
+            <span>4차</span>
+            <br>
+            <span v-for="n in jobs[selectedJobID].fourth" :key="n">
+              <img :src="`src/assets/skills/${selectedJob}/4차/${n}.icon.png`" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click="skillIconSrc(selectedSkill, 4, n)" alt="">
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <div id="timeline">
       <div id="timestamp">
         <div class="minContainer">
@@ -70,12 +115,14 @@
         </div>
       </div>
       <div id="floor"></div>
-      <div class="" v-for="(skill, i) in skills" :key="i">
-        <span class="headerColumn2">
-          <span>스킬{{i + 1}}</span>
-          <img src="./assets/logo.png" class="skillIconLarge" alt="">
-        </span>
-        
+      <div id="skills">
+        <div class="skillContainer" v-for="(skill, i) in skills" :key="i">
+          <span class="headerColumn2">
+            <span>스킬{{i + 1}}</span>
+            <img class="skillIcon" :src="skillIcons[i]" alt="">
+          </span>
+          <span class="skill"></span>
+        </div>
       </div>
     </div>
       
@@ -96,10 +143,18 @@ export default {
       bdiPCheck : [false],
       cdrPCheck : [false],
       cdrVCheck : [false],
+      skillIcons : ['src/assets/logo.png'],
       bdiP : 0,
       cdrP : 0,
       cdrV : 0,
+      selectedJob : "팔라딘",
+      selectedJobID : 1,
+      selectedSkill : 0
     }
+  },
+
+  mounted(){
+
   },
 
   methods:{
@@ -108,6 +163,7 @@ export default {
       this.bdiPCheck.push(false)
       this.cdrPCheck.push(false)
       this.cdrVCheck.push(false)
+      this.skillIcons.push('src/assets/logo.png')
     },
     
     removeSkill : function(i){
@@ -115,6 +171,7 @@ export default {
       this.bdiPCheck.splice(i, 1)
       this.cdrPCheck.splice(i, 1)
       this.cdrVCheck.splice(i, 1)
+      this.skillIcons.splice(i, 1)
     },
 
     cooldownCal : function(cooldown, i){
@@ -156,7 +213,44 @@ export default {
         value = value - '.00'
       }
       return value
+    },
+
+    jobIDCal : function(){
+      let job = jobs.find(i => i.name === this.selectedJob)
+      this.selectedJobID = job.id
+    },
+
+    selectSkill : function(i){
+      this.selectedSkill = i
+    },
+
+    skillIconSrc : function(i, c, n){
+      if(c==1){
+        c = "1차"
+      }
+      else if(c==2){
+        c = "2차"
+      }
+      else if(c==3){
+        c = "3차"
+      }
+      else{
+        c = "4차"
+      }
+      this.skillIcons[i] = "src/assets/skills/" + this.selectedJob + "/" + c + "/" + n + ".icon.png"
+      console.log(this.skillIcons[i])
     }
+
+    // importIcons : function(r){
+    //   r.keys().forEach(key => (this.skillIcons.push({ pathLong: r(key), pathShort: key})))
+    // }
+
+    // importIcons2 : function(){
+    //   fs.readdir('./data/skills', (err, files) => {
+    //     files.forEach(file => {
+    //     console.log(file);
+    //   })});
+    // }
 
     
   },
@@ -174,9 +268,11 @@ export default {
 <style>
   .headerColumn1{
     width: 200px;
+    height: 30px;
     text-align: center;
     padding: 0px;
     background-color: dimgray;
+    position: fixed;
   }
 
   .headerColumn2{
@@ -186,6 +282,7 @@ export default {
     height: 60px;
     padding: 0px;
     background-color: rgb(197, 197, 197);
+    position: fixed;
   }
   
   .inputSkill{
@@ -196,10 +293,12 @@ export default {
 
   .minContainer{
     white-space: nowrap;
+    height: 30px;
   }
 
   .minute{
     width: 120px;
+    height: 30px;
     text-align: center;
     padding: 0px;
   }
@@ -210,6 +309,7 @@ export default {
   .minute:nth-child(odd){
     background-color: cornflowerblue;
   }
+
 
   .numberInput{
     width: 40px;
@@ -222,16 +322,27 @@ export default {
   }
 
   .skillIcon{
-    width: 20px;
-    height: 20px;
-    border-width: 1px;
+    width: 32px;
+    height: 32px;
+    border-width: 0px;
     border-style: solid;
-    border-radius: 6px;
-    padding: 2px;
+    border-radius: 4px;
+    padding: 0px;
     vertical-align: center;
   }
 
-  .skillIconLarge{
+  .skillContainer{
+    white-space: nowrap;
+    height: 60px;
+  }
+
+  .skill{
+    width: 120px;
+    height: 60px;
+    text-align: center;
+    padding: 0px;
+  }
+  /* .skillIconLarge{
     width: 40px;
     height: 40px;
     border-width: 1px;
@@ -239,14 +350,16 @@ export default {
     border-radius: 12px;
     padding: 2px;
     vertical-align: bottom;
-  }
+  } */
 
   .tenSecContainer{
     white-space: nowrap;
+    height: 30px;
   }
 
   .tenSeconds{
     width: 20px;
+    height: 30px;
     text-align: center;
     padding: 0px;
   }
@@ -270,6 +383,7 @@ export default {
 
   #timeline{
     overflow: scroll;
+    position: fixed;
   }
 
 
